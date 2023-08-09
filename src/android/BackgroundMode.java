@@ -21,21 +21,28 @@
 
 package de.appplant.cordova.plugin.background;
 
+import static android.content.Context.BIND_AUTO_CREATE;
+import static de.appplant.cordova.plugin.background.BackgroundModeExt.clearKeyguardFlags;
+
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.background.ForegroundService.ForegroundBinder;
-
-import static android.content.Context.BIND_AUTO_CREATE;
-import static de.appplant.cordova.plugin.background.BackgroundModeExt.clearKeyguardFlags;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -59,6 +66,8 @@ public class BackgroundMode extends CordovaPlugin {
 
     // Service that keeps the app awake
     private ForegroundService service;
+
+    final int PERMISSION_REQUEST_CODE =112;
 
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection()
@@ -170,9 +179,45 @@ public class BackgroundMode extends CordovaPlugin {
     {
         isDisabled = false;
 
+
         if (inBackground) {
             startService();
         }
+    }
+    public void getNotificationPermission(Activity context){
+        try {
+            if (Build.VERSION.SDK_INT > 32) {
+                ActivityCompat.requestPermissions(context,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSION_REQUEST_CODE);
+            }
+        }catch (Exception e){
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        try {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // allow
+
+                }  else {
+                    //deny
+                }
+                return;
+
+        }
+
     }
 
     /**
@@ -239,6 +284,7 @@ public class BackgroundMode extends CordovaPlugin {
         if (isDisabled || isBind)
             return;
 
+
         Intent intent = new Intent(context, ForegroundService.class);
 
         try {
@@ -248,7 +294,12 @@ public class BackgroundMode extends CordovaPlugin {
         } catch (Exception e) {
             fireEvent(Event.FAILURE, String.format("'%s'", e.getMessage()));
         }
+                if (Build.VERSION.SDK_INT > 32) {
 
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.POST_NOTIFICATIONS)){
+            getNotificationPermission(context);
+        }
+        }
         isBind = true;
     }
 
