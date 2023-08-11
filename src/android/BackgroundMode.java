@@ -280,9 +280,14 @@ public class BackgroundMode extends CordovaPlugin {
     private void startService()
     {
         Activity context = cordova.getActivity();
-
+        if (Build.VERSION.SDK_INT > 32) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.POST_NOTIFICATIONS)){
+                getNotificationPermission(context);
+            }
+        }
         if (isDisabled || isBind)
             return;
+
 
 
         Intent intent = new Intent(context, ForegroundService.class);
@@ -294,12 +299,7 @@ public class BackgroundMode extends CordovaPlugin {
         } catch (Exception e) {
             fireEvent(Event.FAILURE, String.format("'%s'", e.getMessage()));
         }
-                if (Build.VERSION.SDK_INT > 32) {
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.POST_NOTIFICATIONS)){
-            getNotificationPermission(context);
-        }
-        }
         isBind = true;
     }
 
