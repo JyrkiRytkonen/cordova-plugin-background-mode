@@ -58,12 +58,6 @@
     <!-- android -->
     <platform name="android">
         <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-permission android:name="android.permission.WAKE_LOCK" />
-            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-            <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-        </config-file>
-
-        <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
         </config-file>
         <config-file target="res/xml/config.xml" parent="/*">
@@ -83,7 +77,10 @@
             <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
         </config-file>
 
-        
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+        </config-file>
+
         <source-file
             src="src/android/BackgroundMode.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
