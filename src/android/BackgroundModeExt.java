@@ -234,8 +234,8 @@ public class BackgroundModeExt extends CordovaPlugin {
             if (pm.resolveActivity(intent, MATCH_DEFAULT_ONLY) != null)
             {
                 JSONObject spec = (arg instanceof JSONObject) ? (JSONObject) arg : null;
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                // https://issuetracker.google.com/issues/36907463
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 if (arg instanceof Boolean && !((Boolean) arg))
                 {
