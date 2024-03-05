@@ -1,5 +1,5 @@
 /*
- Copyright 2013 Sebastián Katzer
+ Copyright 2013 SebastiÃ¡n Katzer
 
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -31,18 +31,25 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
+import android.os.Bundle;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.background.ForegroundService.ForegroundBinder;
+
+import static android.content.Context.BIND_AUTO_CREATE;
+import static de.appplant.cordova.plugin.background.BackgroundModeExt.clearKeyguardFlags;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -83,6 +90,24 @@ public class BackgroundMode extends CordovaPlugin {
         public void onServiceDisconnected (ComponentName name)
         {
             fireEvent(Event.FAILURE, "'service disconnected'");
+        }
+    };
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.backgroundmode.close" + cordova.getContext().getPackageName());
+        cordova.getActivity().registerReceiver(receiver, filter);
+
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            cordova.getActivity().finish();
+
         }
     };
 
