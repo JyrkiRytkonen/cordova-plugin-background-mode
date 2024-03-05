@@ -21,8 +21,11 @@
 
 package de.appplant.cordova.plugin.background;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.*;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -37,6 +40,9 @@ import de.appplant.cordova.plugin.background.ForegroundService.ForegroundBinder;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static de.appplant.cordova.plugin.background.BackgroundModeExt.clearKeyguardFlags;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -257,6 +263,11 @@ public class BackgroundMode extends CordovaPlugin {
 
         if (isDisabled || isBind)
             return;
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.POST_NOTIFICATIONS},101);
+            }
+        }
 
         Intent intent = new Intent(context, ForegroundService.class);
 
