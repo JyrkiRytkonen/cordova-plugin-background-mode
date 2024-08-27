@@ -40,13 +40,14 @@
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-
+    <!--
+     Apple review don not allow, if asked, when app is not using it
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>audio</string>
             </array>
         </config-file>
-
+     -->
         <resource-file src="appbeep.wav" />
 
         <header-file src="src/ios/APPBackgroundMode.h" />
