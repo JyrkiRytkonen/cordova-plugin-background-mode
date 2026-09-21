@@ -83,6 +83,10 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
         </config-file>
 
